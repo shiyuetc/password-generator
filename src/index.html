@@ -1,0 +1,115 @@
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Password Generator</title>
+  <link rel="icon" type="image/png" href="./favicon.png">
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./css/v-tooltip.css">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+  <script src="https://unpkg.com/v-tooltip"></script>
+</head>
+<body>
+  <div id="app">
+    <h2 id="title">Password Generator</h2>
+    <table id="setting-table" class="table">
+      <tr>
+        <td>使用する文字</td>
+        <td>
+          <input type="checkbox" id="number" value="number" v-model="options.using"><label for="number" v-tooltip="'[' + characters.number + ']'">数字</label>
+          <input type="checkbox" id="alpha-lower" value="alpha_lower" v-model="options.using"><label for="alpha-lower" v-tooltip="'[' + characters.alpha_lower + ']'">英字(小文字)</label>
+          <input type="checkbox" id="alpha-upper" value="alpha_upper" v-model="options.using"><label for="alpha-upper" v-tooltip="'[' + characters.alpha_upper + ']'">英字(大文字)</label>
+          <input type="checkbox" id="symbol" value="symbol" v-model="options.using"><label for="symbol" v-tooltip="'[' + characters.symbol + ']'">記号</label>
+          <input type="checkbox" id="custom" value="custom" v-model="options.using"><label for="custom">カスタム</label>
+        </td>
+      </tr>
+      <tr v-show="customChecked">
+        <td>カスタム文字</td>
+        <td><input type="text" maxlength="100" v-model="characters.custom" style="width:100%"></td>
+      </tr>
+      <tr>
+        <td>文字数</td>
+        <td><input type="number" max="100" min="1" v-model="options.length"></td>
+      </tr>
+      <tr>
+        <td>生成数</td>
+        <td><input type="number" max="100" min="1" v-model="options.count"></td>
+      </tr>
+    </table>
+    <ul id="errors-list">
+      <li v-show="options.using.length == 0">使用する文字を1つ以上選択してください。</li>
+      <li v-show="customChecked && characters.custom.length < 1">カスタム文字は1文字以上にしてください。</li>
+      <li v-show="customChecked && characters.custom.length > 100">カスタム文字は100文字以下にしてください。</li>
+      <li v-show="options.length < 1">文字数は1文字以上にしてください。</li>
+      <li v-show="options.length > 100">文字数は100文字以下にしてください。</li>
+      <li v-show="options.count < 1">生成数は1文字以上にしてください。</li>
+      <li v-show="options.count > 100">生成数は100文字以下にしてください。</li>
+    </ul>
+    <button id="generate-button" @click="generate" v-bind:disabled="!validationCheck">パスワード生成</button>
+    <table id="result-table" class="table">
+      <tr v-for="(result, index) in results">
+        <td>{{ result }}</td>
+        <td><button class="copy" @click="copy(result)" v-tooltip="'クリップボードにコピー'"><img src="./images/cb.png" alt=""></button></td>
+      </tr>
+    </table>
+  </div>
+  <script>
+  new Vue({
+    el: '#app',
+    data: {
+      options: {
+        using: ['number', 'alpha_lower', 'alpha_upper'],
+        length: 10,
+        count: 5
+      },
+      characters: {
+        number: '0123456789',
+        alpha_lower: 'abcdefghijklmnopqrstuvwxyz',
+        alpha_upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+        symbol: '/*-+.,!#$%&()~|_',
+        custom: 'abc'
+      },
+      results: []
+    },
+    computed: {
+      customChecked() {
+        return this.options.using.indexOf('custom') > -1;
+      },
+      validationCheck () {
+        if(this.customChecked) {
+          if(this.characters.custom.length < 1 || this.characters.custom.length > 100) return false;
+        }
+        return (this.options.using.length > 0 &&
+          this.options.length > 0 && this.options.length < 101 &&
+          this.options.count > 0 && this.options.count < 101);
+      }
+    },
+    methods: {
+      copy: function(str) {
+        var listener = function(e) {
+          e.clipboardData.setData("text/plain" , str);
+          e.preventDefault();
+          document.removeEventListener("copy", listener);
+        }
+        document.addEventListener("copy" , listener);
+        document.execCommand("copy");
+      },
+      generate: function() {
+        if(!this.validationCheck) return;
+
+        var s = '';
+        for(var i = 0; i < this.options.using.length; i++) {
+          s += this.characters[this.options.using[i]];
+        }
+        
+        this.results = [];
+        for(var i = 0; i < this.options.count; i++) {
+          this.results.push(Array.from(Array(+this.options.length)).map(()=>s[Math.floor(Math.random()*s.length)]).join(''));
+        }
+      }
+    }
+  })
+  </script>
+</body>
+</html>

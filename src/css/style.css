@@ -1,0 +1,61 @@
+:root {
+  --main-bg-color: #bf7fff;
+  --sub-bg-color: #e0c1ff;
+}
+
+body {
+  min-width: 200px;
+  max-width: 1080px;
+  background: url('../images/bg.png');
+  margin: auto;
+}
+div#app {
+  margin: 10px;
+}
+
+h2#title {
+  color: #fff;
+  background: var(--main-bg-color);
+  padding: 8px 10px;
+}
+
+table.table {
+  width: 100%;
+}
+#setting-table tr td {
+  padding: 8px 10px;
+}
+#setting-table tr td:nth-child(1) {
+  width: 120px;
+  min-width: 120px;
+  color: #fff;
+  background: var(--main-bg-color);
+  font-weight: bold;
+}
+#setting-table tr td:nth-child(2) {
+  background: var(--sub-bg-color);
+}
+
+#errors-list {
+  color: #ff0000;
+}
+
+#generate-button {
+  width: 100%;
+  background: #fff;
+  border: 1px solid var(--main-bg-color);
+  margin-bottom: 16px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+#result-table tr td {
+  background: var(--sub-bg-color);
+  word-break : break-all;
+}
+#result-table tr td:nth-child(1) {
+  padding: 8px 10px;
+}
+#result-table tr td:nth-child(2) {
+  width: 18px;
+}
